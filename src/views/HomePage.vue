@@ -22,51 +22,61 @@ img {
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { create } from "ipfs-http-client";
 import { db } from "../plugins/firebase";
 import { collection, query, getDocs } from "firebase/firestore";
 import TesterSystem from "@/components/TesterSystem.vue";
 
-const client = ref(create({ url: "http://127.0.0.1:5001/api/v0" }));
+const client = ref("cf");
 const assets = ref([]);
 const ready = ref(false);
 
 onMounted(() => {
   getDataFromFB().then(() => {
-    try {
-      client.value
-        .isOnline()
-        .then(() => {
-          console.log("online");
-          ready.value = true;
-        })
-        .catch(() => {
-          console.log("offline (catch))");
-          client.value = false;
-          ready.value = true;
-        });
-    } catch (error) {
-      console.log("offline (try/catch)");
-      client.value = false;
-      ready.value = true;
-    }
+    ipfsLocalOnline().then((id) => {
+      if (id) {
+        client.value = "local";
+      } else {
+        client.value = "w3";
+      }
+    });
+    ready.value = true;
   });
 });
 
+async function ipfsLocalOnline() {
+  try {
+    // post to http://localhost:5001/api/v0/id to get status
+    const response = await fetch("http://localhost:5001/api/v0/id", {
+      method: "POST",
+    });
+    const data = await response.json();
+    console.log(data);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 async function getDataFromFB() {
   if (localStorage.getItem("assets")) {
-    assets.value = JSON.parse(localStorage.getItem("assets"));
+    let array = JSON.parse(localStorage.getItem("assets"));
+    shuffleArray(array);
+    assets.value = array;
     console.log("using cached data");
     return;
   }
   const q = query(collection(db, "media"));
-
   const querySnapshot = await getDocs(q);
-
   const array = querySnapshot.docs.map((doc) => doc.data());
   assets.value = array;
-
-  // save the values to local storage
   localStorage.setItem("assets", JSON.stringify(array));
 }
 </script>

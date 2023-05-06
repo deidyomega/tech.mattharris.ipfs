@@ -7,6 +7,7 @@
         transition="scale-transition"
         cover
         @click="dialog = true"
+        @error="src = bkup_src"
       >
         <template v-slot:placeholder>
           <div class="d-flex align-center justify-center fill-height">
@@ -41,6 +42,7 @@ import { loadImgURL } from "../helpers";
 
 const props = defineProps(["item", "client"]);
 const src = ref("");
+const bkup_src = ref("");
 const dialog = ref(false);
 
 function openInTab() {
@@ -48,13 +50,15 @@ function openInTab() {
 }
 
 onMounted(() => {
-  loadImgURL(
-    props.client,
-    props.item.cid,
-    "image/" + props.item.ext,
-    props.item.filename
-  ).then((url) => {
-    src.value = url;
+  loadImgURL(props.item.cid, props.item.filename).then((url) => {
+    console.log(props.client);
+    if (props.client === "local") {
+      src.value = url.local;
+      bkup_src.value = url.w3;
+    } else {
+      src.value = url.w3;
+      bkup_src.value = url.cf;
+    }
   });
 });
 </script>
