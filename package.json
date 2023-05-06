@@ -11,6 +11,9 @@
   "dependencies": {
     "@mdi/font": "7.0.96",
     "core-js": "^3.29.0",
+    "firebase": "^9.21.0",
+    "ipfs-http-client": "^60.0.0",
+    "ipfs-mini": "^1.1.5",
     "pinia": "^2.0.0",
     "roboto-fontface": "*",
     "vue": "^3.2.38",
