@@ -1,15 +1,25 @@
 <template>
   <v-card class="ma-2">
     <v-card-text>
-      <v-img v-if="!is_loading" :src="src" @click="dialog = true" />
-      <v-progress-circular
-        v-else
-        indeterminate
-        size="64"
-        style="width: 100%"
-        mx-auto
-        color="primary"
-      ></v-progress-circular>
+      <v-img
+        :src="src"
+        aspect-ratio="1"
+        transition="scale-transition"
+        cover
+        @click="dialog = true"
+      >
+        <template v-slot:placeholder>
+          <div class="d-flex align-center justify-center fill-height">
+            <v-progress-circular
+              color="primary"
+              style="width: 100%"
+              size="64"
+              mx-auto
+              indeterminate
+            ></v-progress-circular>
+          </div>
+        </template>
+      </v-img>
     </v-card-text>
 
     <v-dialog v-model="dialog" width="auto">
@@ -31,7 +41,6 @@ import { loadImgURL } from "../helpers";
 
 const props = defineProps(["item", "client"]);
 const src = ref("");
-const is_loading = ref(true);
 const dialog = ref(false);
 
 function openInTab() {
@@ -46,7 +55,6 @@ onMounted(() => {
     props.item.filename
   ).then((url) => {
     src.value = url;
-    is_loading.value = false;
   });
 });
 </script>

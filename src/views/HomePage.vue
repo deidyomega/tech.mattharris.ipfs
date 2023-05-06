@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="ready">
       <v-col v-for="item in assets" :key="item.cid" cols="12" sm="4">
         <v-lazy
           :min-height="200"
@@ -29,15 +29,26 @@ import TesterSystem from "@/components/TesterSystem.vue";
 
 const client = ref(create({ url: "http://127.0.0.1:5001/api/v0" }));
 const assets = ref([]);
+const ready = ref(false);
 
 onMounted(() => {
   getDataFromFB().then(() => {
     try {
-      client.value.isOnline().catch(() => {
-        client.value = false;
-      });
+      client.value
+        .isOnline()
+        .then(() => {
+          console.log("online");
+          ready.value = true;
+        })
+        .catch(() => {
+          console.log("offline (catch))");
+          client.value = false;
+          ready.value = true;
+        });
     } catch (error) {
+      console.log("offline (try/catch)");
       client.value = false;
+      ready.value = true;
     }
   });
 });
