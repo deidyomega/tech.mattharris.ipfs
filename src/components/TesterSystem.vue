@@ -28,7 +28,7 @@
         <v-card-text>
           <img
             :src="src"
-            style="max-width: 90vh; max-height: 90vh"
+            style="max-width: 90vw; max-height: 90vh"
             @click="openInTab"
           />
         </v-card-text>
