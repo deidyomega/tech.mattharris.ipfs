@@ -10,7 +10,10 @@
         @error="src = bkup_src"
       >
         <template v-slot:placeholder>
-          <div class="d-flex align-center justify-center fill-height">
+          <div
+            @click="direct_load()"
+            class="d-flex align-center justify-center fill-height"
+          >
             <v-progress-circular
               color="primary"
               style="width: 100%"
@@ -28,8 +31,8 @@
         <v-card-text>
           <img
             :src="src"
-            style="max-width: 90vw; max-height: 90vh"
-            @click="openInTab"
+            style="max-width: 100%; max-height: 90vh"
+            @click.stop="openInTab"
           />
         </v-card-text>
       </v-card>
@@ -47,6 +50,13 @@ const dialog = ref(false);
 
 function openInTab() {
   window.open(src.value, "_blank");
+}
+
+async function direct_load() {
+  // wait 10 ms then close the dialog
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  dialog.value = false;
+  window.open(bkup_src.value, "_blank");
 }
 
 onMounted(() => {
